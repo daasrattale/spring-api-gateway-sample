@@ -1,0 +1,53 @@
+server:
+  port: 9090
+
+spring:
+  application:
+    name: io-gateway
+  
+  datasource:
+    url: jdbc:h2:file:./gateway/data/gatewayDB
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+#  main:
+#    allow-bean-definition-overriding: true
+
+
+eureka:
+  instance:
+    hostname: ${spring.application.name}
+    secure-port-enabled: true
+    nonsecure-port-enabled: false
+    nonSecurePort: 80
+    securePort: 443
+    instanceId: ${eureka.instance.hostname}:${spring.application.name}:${PORT}
+    statusPageUrl: http://${eureka.hostname}/
+    healthCheckUrl: http://${eureka.hostname}/actuator/health
+    secureHealthCheckUrl: http://${eureka.hostname}/actuator/health
+
+  client:
+    registerWithEureka: false
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://localhost:8099/eureka/
+
+zuul:
+  routes:
+    client:
+      path: /client/**
+#      serviceId: REGISTRY-EUREKA-CLIENT
+      serviceId: registry-eureka-client
+#      url: http://localhost:8096
+
+
+ribbon:
+  NIWSServerListClassName: com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList
+  eureka:
+    enabled: true
+
